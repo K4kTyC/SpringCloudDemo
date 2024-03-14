@@ -1,0 +1,35 @@
+spring.application.name: auth-server
+server.port: 8081
+
+spring:
+  security:
+    oauth2:
+      authorizationserver:
+        client:
+          gateway:
+            registration:
+              client-id: gateway
+              client-secret: "{noop}secret"
+              client-authentication-methods:
+                - client_secret_basic
+              authorization-grant-types:
+                - сlient_credentials
+                - authorization_code
+                - refresh_token
+              redirect-uris:
+                - http://localhost:8080/login/oauth2/code/spring
+              scopes:
+                - openid
+                - user.read
+            require-authorization-consent: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true
+
+logging:
+  level:
+    org.springframework.security: trace

@@ -1,0 +1,5 @@
+rootProject.name = 'SpringCloudDemo'
+include 'auth-server'
+include 'dummy-service'
+include 'gateway'
+include 'eureka-server'
