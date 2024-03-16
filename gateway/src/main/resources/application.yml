@@ -2,24 +2,30 @@ spring.application.name: gateway
 server.port: 8080
 
 spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          spring:
-            provider: spring
-            client-id: gateway
-            client-secret: secret
-            authorization-grant-type: authorization_code
-            client-authentication-method: client_secret_basic
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope:
-              - openid
-              - user.read
-        provider:
-          spring:
-           issuer-uri: http://localhost:8081
+  config:
+    import: "optional:configserver:"
   cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          spring:
+#            provider: spring
+#            client-id: gateway
+#            client-secret: password
+#            authorization-grant-type: authorization_code
+#            client-authentication-method: client_secret_basic
+#            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+#            scope:
+#              - openid
+#              - user.read
+#        provider:
+#          spring:
+#            issuer-uri: http://localhost:8081
     gateway:
       routes:
         - id: dummy
@@ -32,7 +38,7 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+      defaultZone: "${EUREKA_URI:http://localhost:8761/eureka}"
   instance:
     preferIpAddress: true
 

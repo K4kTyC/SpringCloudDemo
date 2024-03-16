@@ -2,31 +2,39 @@ spring.application.name: auth-server
 server.port: 8081
 
 spring:
-  security:
-    oauth2:
-      authorizationserver:
-        client:
-          gateway:
-            registration:
-              client-id: gateway
-              client-secret: "{noop}secret"
-              client-authentication-methods:
-                - client_secret_basic
-              authorization-grant-types:
-                - сlient_credentials
-                - authorization_code
-                - refresh_token
-              redirect-uris:
-                - http://localhost:8080/login/oauth2/code/spring
-              scopes:
-                - openid
-                - user.read
-            require-authorization-consent: true
+  config:
+    import: "optional:configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+#  spring:
+#    security:
+#      oauth2:
+#        authorizationserver:
+#          client:
+#            gateway:
+#              registration:
+#                client-id: gateway
+#                client-secret: "{bcrypt}$2a$10$g1/NkhNjXVBte07Kr85vB.ViP5FzvShGsKe.JNHvFrqQHg6g3HP2."
+#                client-authentication-methods:
+#                  - client_secret_basic
+#                authorization-grant-types:
+#                  - сlient_credentials
+#                  - authorization_code
+#                  - refresh_token
+#                redirect-uris:
+#                  - http://localhost:8080/login/oauth2/code/spring
+#                scopes:
+#                  - openid
+#                  - user.read
+#              require-authorization-consent: true
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+      defaultZone: "${EUREKA_URI:http://localhost:8761/eureka}"
   instance:
     preferIpAddress: true
 

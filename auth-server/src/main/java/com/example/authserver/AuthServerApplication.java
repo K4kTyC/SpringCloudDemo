@@ -13,9 +13,4 @@ public class AuthServerApplication {
 		SpringApplication.run(AuthServerApplication.class, args);
 	}
 
-	@Bean
-	InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-		var one = User.withDefaultPasswordEncoder().username("user1").password("pass").roles("user").build();
-		return new InMemoryUserDetailsManager(one);
-	}
 }
