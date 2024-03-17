@@ -1,0 +1,33 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          spring:
+            provider: spring
+            client-id: gateway
+            client-secret: secret
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_basic
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - user.read
+        provider:
+          spring:
+            issuer-uri: http://localhost:8081
+  cloud:
+    gateway:
+      routes:
+        - id: dummy
+          uri: lb://dummy-service
+          predicates:
+            - Path=/
+          filters:
+            - TokenRelay=
+
+logging:
+  level:
+    org.springframework:
+      security: trace
+      cloud: trace

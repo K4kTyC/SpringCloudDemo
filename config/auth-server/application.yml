@@ -1,0 +1,25 @@
+spring:
+  security:
+    oauth2:
+      authorizationserver:
+        client:
+          gateway:
+            registration:
+              client-id: gateway
+              client-secret: "{noop}secret"
+              client-authentication-methods:
+                - client_secret_basic
+              authorization-grant-types:
+                - сlient_credentials
+                - authorization_code
+                - refresh_token
+              redirect-uris:
+                - http://localhost:8080/login/oauth2/code/spring
+              scopes:
+                - openid
+                - user.read
+            require-authorization-consent: true
+
+logging:
+  level:
+    org.springframework.security: trace
