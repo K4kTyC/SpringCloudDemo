@@ -14,6 +14,7 @@
         <module>gateway</module>
         <module>discovery-server</module>
         <module>config-server</module>
+        <module>common</module>
     </modules>
 
     <properties>

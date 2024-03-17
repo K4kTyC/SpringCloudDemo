@@ -1,5 +1,6 @@
 package com.example.dummyservice;
 
+import com.example.common.TextDto;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +35,7 @@ class DummyController {
     }
 
 	@GetMapping("/")
-	String getText() {
-		return dummyService.getText();
+	TextDto getText() {
+		return new TextDto(dummyService.getText());
 	}
 }
