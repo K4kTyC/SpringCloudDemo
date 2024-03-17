@@ -1,0 +1,19 @@
+version: "3.3"
+
+services:
+
+  auth_server_db:
+    image: mariadb:11.3.2
+    restart: unless-stopped
+    container_name: auth_server_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: auth_server_db
+    volumes:
+      - auth_server_db_vol:/var/lib/mysql
+
+volumes:
+  auth_server_db_vol:
+    external: true

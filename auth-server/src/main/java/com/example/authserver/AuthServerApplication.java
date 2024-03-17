@@ -4,7 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+
+import javax.sql.DataSource;
 
 @SpringBootApplication
 public class AuthServerApplication {
@@ -14,8 +18,17 @@ public class AuthServerApplication {
 	}
 
 	@Bean
-	InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-		var one = User.withDefaultPasswordEncoder().username("user1").password("pass").roles("user").build();
-		return new InMemoryUserDetailsManager(one);
+	JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
+		UserDetails user = User.builder()
+				.username("user1")
+				.password("{noop}pass")
+				.roles("USER")
+				.build();
+
+		JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
+		if (!users.userExists(user.getUsername())) {
+			users.createUser(user);
+		}
+		return users;
 	}
 }
