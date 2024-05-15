@@ -12,7 +12,7 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - openid
-              - user.read
+              - role.read
         provider:
           spring:
             issuer-uri: http://localhost:8081
@@ -20,9 +20,15 @@ spring:
     gateway:
       routes:
         - id: dummy
-          uri: lb://dummy-service
+          uri: lb://DUMMY-SERVICE
           predicates:
             - Path=/
+          filters:
+            - TokenRelay=
+        - id: register
+          uri: lb://AUTH-SERVER
+          predicates:
+            - Path=/auth/register
           filters:
             - TokenRelay=
 

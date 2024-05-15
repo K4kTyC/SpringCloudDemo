@@ -23,8 +23,8 @@ spring:
                 - http://localhost:8080/login/oauth2/code/spring
               scopes:
                 - openid
-                - user.read
-            require-authorization-consent: true
+                - role.read
+            require-authorization-consent: false
 
 logging:
   level:

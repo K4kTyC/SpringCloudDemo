@@ -19,7 +19,7 @@ public class DummyServiceApplication {
 @Service
 class DummyService {
 
-	@PreAuthorize("hasAuthority('SCOPE_user.read')")
+	@PreAuthorize("hasAuthority('SCOPE_role.read')")
 	public String getText() {
 		return "kek";
 	}
