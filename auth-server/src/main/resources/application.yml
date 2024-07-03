@@ -1,18 +1,49 @@
 spring.application.name: auth-server
 server.port: 8081
 
-spring:
-  config:
-    import: "optional:configserver:"
-  cloud:
-    config:
-      discovery:
-        enabled: true
-        serviceId: config-server
+#spring:
+#  config:
+#    import: "optional:configserver:"
+#  cloud:
+#    config:
+#      discovery:
+#        enabled: true
+#        serviceId: config-server
+#
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://localhost:8761/eureka
+#  instance:
+#    preferIpAddress: true
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka
-  instance:
-    preferIpAddress: true
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/auth_server_db
+    username: root
+    password: root
+  sql.init.mode: always
+  jpa.hibernate.ddl-auto: none
+  security:
+    oauth2:
+      authorizationserver:
+        client:
+          gateway:
+            registration:
+              client-id: gateway
+              client-secret: "{noop}secret"
+              client-authentication-methods:
+                - client_secret_basic
+              authorization-grant-types:
+                - сlient_credentials
+                - authorization_code
+                - refresh_token
+              redirect-uris:
+                - http://localhost:8080/login/oauth2/code/spring
+              scopes:
+                - openid
+            require-authorization-consent: false
+
+logging:
+  level:
+    org.springframework.security: trace
