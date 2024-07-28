@@ -29,29 +29,12 @@ spring:
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_basic
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope:
-              - openid
+            scope: openid
         provider:
           spring:
             issuer-uri: http://localhost:8081
   cloud:
     gateway:
-      default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
-        - AddResponseHeader=Access-Control-Allow-Origin, *
-      globalcors:
-        add-to-simple-url-handler-mapping: true
-        cors-configurations:
-          '[/**]':
-            allowedHeaders: "*"
-            allowedOrigins:
-              - "http://localhost:8081"
-              - "http://localhost:8080"
-              - "http://localhost:5173"
-            allowedMethods:
-              - GET
-              - POST
-              - OPTIONS
       routes:
         - id: register
           uri: "http://localhost:8081"

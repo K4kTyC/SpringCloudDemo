@@ -34,13 +34,13 @@ INSERT IGNORE INTO roles
 VALUES (1, 'ROLE_USER'), (2, 'ROLE_ADMIN');
 
 INSERT IGNORE INTO privileges
-VALUES (1, 'role.read'), (2, 'role.write');
+VALUES (1, 'roles.read'), (2, 'roles.write');
 
 INSERT IGNORE INTO users
-VALUES (1, 'admin', '{bcrypt}$2a$10$XnlQ6WrgyPwc0FPe04HxjOGcuNNhPSwRe6vStEpxQ1D85ny0L.ofK');
+VALUES (1, 'admin', '{bcrypt}$2a$10$VeZuNeOVnSYbbORx./9S.eCly8178h5chkdFAEH6FYo6i3NHiczZK');
 
 INSERT IGNORE INTO users_roles
 VALUES (1, 2);
 
 INSERT IGNORE INTO roles_privileges
-VALUES (1, 1), (2, 2);
+VALUES (1, 1), (2, 1), (2, 2);

@@ -1,19 +1,36 @@
 package com.example.authserver.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+import java.util.Set;
+
+import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 @EnableWebSecurity
@@ -26,14 +43,6 @@ public class WebSecurityConfig {
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
         http
-                // Redirect to the login page when not authenticated from the
-                // authorization endpoint
-                .exceptionHandling((exceptions) -> exceptions
-                        .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/login"),
-                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
-                        )
-                )
                 // Accept access tokens for User Info and/or Client Registration
                 .oauth2ResourceServer((resourceServer) -> resourceServer
                         .jwt(Customizer.withDefaults()));
@@ -43,18 +52,54 @@ public class WebSecurityConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/auth/register").permitAll()
-                        .anyRequest().authenticated()
+                .securityMatcher("/login", "/api/auth/login")
+                .formLogin(login -> login
+                        .loginPage("/login")
+                        .loginProcessingUrl("/api/auth/login")
+                        .successHandler((req, res, auth) -> {
+                            res.resetBuffer();
+                            res.setStatus(HttpStatus.OK.value());
+                            res.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+
+                            var savedReq = new HttpSessionRequestCache().getRequest(req, res);
+                            res.getWriter()
+                                    .append("{\"redirectUrl\": \"")
+                                    .append(savedReq == null ? "" : savedReq.getRedirectUrl())
+                                    .append("\"}");
+                            res.flushBuffer();
+                        })
+                        .failureHandler((req, res, ex) -> res.setStatus(HttpStatus.UNAUTHORIZED.value()))
                 )
-                // Form login handles the redirect to the login page from the
-                // authorization server filter chain
-                .formLogin(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
+    }
+
+    @Bean
+    @Order(3)
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers(POST, "/api/auth/register").permitAll()
+                        .anyRequest().authenticated()
+                );
+
+        return http.build();
+    }
+
+
+    @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer() {
+        return (context) -> {
+            if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
+                context.getClaims().claims((claims) -> {
+                    Set<String> authorities = AuthorityUtils.authorityListToSet(context.getPrincipal().getAuthorities());
+                    claims.put("authorities", authorities);
+                });
+            }
+        };
     }
 
     @Bean
