@@ -24,6 +24,7 @@
         <mariadb.version>3.3.3</mariadb.version>
 
         <common.version>0.0.1-SNAPSHOT</common.version>
+        <feign-clients.version>0.0.1-SNAPSHOT</feign-clients.version>
 
         <h2.version>2.2.224</h2.version>
     </properties>
@@ -58,6 +59,11 @@
                 <groupId>com.example</groupId>
                 <artifactId>common</artifactId>
                 <version>${common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.example</groupId>
+                <artifactId>feign-clients</artifactId>
+                <version>${feign-clients.version}</version>
             </dependency>
 
             <dependency>
