@@ -1,0 +1,7 @@
+dialog {
+    width: 500px;
+    margin: auto;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    z-index: 100;
+}

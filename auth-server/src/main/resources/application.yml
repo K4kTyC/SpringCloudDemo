@@ -23,7 +23,7 @@ spring:
     username: root
     password: root
   sql.init.mode: always
-  jpa.hibernate.ddl-auto: none
+  jpa.hibernate.ddl-auto: validate
   security:
     oauth2:
       authorizationserver:

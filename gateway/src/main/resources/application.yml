@@ -48,6 +48,12 @@ spring:
             - Path=/api/auth/login
           filters:
             - TokenRelay=
+        - id: userinfo
+          uri: "http://localhost:8081"
+          predicates:
+            - Path=/api/auth/userinfo
+          filters:
+            - TokenRelay=
         - id: dummy
           uri: "http://localhost:8082"
           predicates:
