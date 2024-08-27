@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import TabsSection from "./components/TabsSection";
 import JwtContent from "./components/JwtContent";
 import UsersContent from "./components/UsersContent";
+import RolesContent from "./components/RolesContent";
 
 function App() {
   const [activeTab, setActiveTab] = useState("jwt");
@@ -39,6 +40,7 @@ function App() {
 
         {activeTab === "jwt" && <JwtContent />}
         {activeTab === "users" && <UsersContent />}
+        {activeTab === "roles" && <RolesContent />}
       </main>
     </>
   );

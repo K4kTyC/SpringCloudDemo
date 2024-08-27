@@ -36,22 +36,22 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: register
+        - id: auth
           uri: "http://localhost:8081"
           predicates:
-            - Path=/api/auth/register
+            - Path=/api/auth/**
           filters:
             - TokenRelay=
-        - id: login
+        - id: users
           uri: "http://localhost:8081"
           predicates:
-            - Path=/api/auth/login
+            - Path=/api/users/**
           filters:
             - TokenRelay=
-        - id: userinfo
+        - id: roles
           uri: "http://localhost:8081"
           predicates:
-            - Path=/api/auth/userinfo
+            - Path=/api/roles/**
           filters:
             - TokenRelay=
         - id: dummy

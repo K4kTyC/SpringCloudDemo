@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -25,23 +27,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException(STR."Username \{username} not found"));
+                .orElseThrow(() -> new RuntimeException("Username " + username + " not found"));
 
-        Collection<GrantedAuthority> authorities = getAuthorities(user.getRoles());
+        Collection<GrantedAuthority> authorities = getAuthorities(user.getRole());
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(), user.getPassword(), authorities);
     }
 
-    private Collection<GrantedAuthority> getAuthorities(Collection<Role> roles) {
+    private Collection<GrantedAuthority> getAuthorities(Role role) {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-            authorities.addAll(role.getPrivileges()
-                    .stream()
-                    .map(p -> new SimpleGrantedAuthority(p.getName()))
-                    .toList());
-        }
+        authorities.add(new SimpleGrantedAuthority(role.getName()));
+        authorities.addAll(role.getPrivileges()
+                .stream()
+                .map(p -> new SimpleGrantedAuthority(p.getName()))
+                .toList());
 
         return authorities;
     }
@@ -52,6 +52,18 @@ public class UserServiceImpl implements UserService {
 
     public boolean userExists(User user) {
         return userRepository.existsByUsername(user.getUsername());
+    }
+
+    public List<User> getAll() {
+         return userRepository.findAll();
+    }
+
+    public Optional<User> findById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
     }
 
 

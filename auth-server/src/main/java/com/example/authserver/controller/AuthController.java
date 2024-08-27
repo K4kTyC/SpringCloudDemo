@@ -38,7 +38,7 @@ public class AuthController {
     }
 
     @GetMapping("/userinfo")
-    public ResponseEntity<UserInfoDto> userInfo(Authentication authentication) {
+    public ResponseEntity<UserInfoDto> currentUserInfo(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         String username = user.getUsername();
         String role = user.getAuthorities().stream()

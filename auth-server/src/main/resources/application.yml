@@ -24,6 +24,8 @@ spring:
     password: root
   sql.init.mode: always
   jpa.hibernate.ddl-auto: validate
+  jpa.show-sql: true
+  jpa.properties.hibernate.format_sql: true
   security:
     oauth2:
       authorizationserver:

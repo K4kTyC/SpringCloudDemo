@@ -1,5 +1,5 @@
 export default function UserHeaderContent({ doOnLogout }) {
-  async function logout() {
+  function logout() {
     const logoutRequest = {
       method: "POST",
       headers: {
@@ -14,8 +14,9 @@ export default function UserHeaderContent({ doOnLogout }) {
       .then((response) => {
         if (response.ok) {
           doOnLogout();
+        } else {
+          return Promise.reject(response.status);
         }
-        return Promise.reject(response.status);
       })
       .catch((error) => {
         console.error("There was an error!", error);

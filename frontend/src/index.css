@@ -43,6 +43,15 @@ section ul li {
   margin-bottom: 1rem;
 }
 
+table, th, td {
+  border: 1px solid;
+}
+
+th, td {
+  text-align: center;
+  padding: 15px;
+}
+
 .content,
 p {
   padding: 1rem 0;

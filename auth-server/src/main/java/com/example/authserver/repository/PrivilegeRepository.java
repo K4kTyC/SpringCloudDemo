@@ -1,13 +1,13 @@
 package com.example.authserver.repository;
 
-import com.example.authserver.entity.Role;
+import com.example.authserver.entity.Privilege;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
+public interface PrivilegeRepository extends JpaRepository<Privilege, Long> {
 
-    Optional<Role> findByName(String name);
+    Optional<Privilege> findByName(String privilegeName);
 }
