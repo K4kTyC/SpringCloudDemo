@@ -4,6 +4,8 @@ import com.example.authserver.dto.NewUserDto;
 import com.example.authserver.dto.UserDto;
 import com.example.authserver.entity.Role;
 import com.example.authserver.entity.User;
+import com.example.authserver.exception.ActionForbiddenException;
+import com.example.authserver.exception.EntityNotFoundException;
 import com.example.authserver.mapper.UserMapper;
 import com.example.authserver.service.RoleService;
 import com.example.authserver.service.UserService;
@@ -46,18 +48,17 @@ public class UserFacade {
     }
 
     public String updateUserRole(Long userId, String newRoleName) {
-        String roleName = newRoleName.toUpperCase();
-        if (!roleName.startsWith("ROLE_")) {
-            throw new RuntimeException("Invalid role name: " + roleName);
+        User user = userService.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("No user with id: " + userId));
+        if (user.getRole().getName().equals("ROLE_ADMIN")) {
+            throw new ActionForbiddenException("Modifying Role of Admin users is forbidden");
+        }
+        if (user.getRole().getName().equals(newRoleName)) {
+            return newRoleName;
         }
 
-        User user = userService.findById(userId).orElseThrow(() -> new RuntimeException("No user with id: " + userId));
-        if (user.getRole().getName().equals(roleName)) {
-            return roleName;
-        }
-
-        Role role = roleService.findByName(roleName)
-                .orElseGet(() -> roleService.save(new Role(roleName)));
+        Role role = roleService.findByName(newRoleName)
+                .orElseGet(() -> roleService.save(new Role(newRoleName)));
 
         user.setRole(role);
         userService.save(user);
