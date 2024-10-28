@@ -11,6 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UpdateUserRoleDto {
 
+    private Long roleId;
+
     @Pattern(regexp = "^ROLE_[A-Z0-9]{1,15}$", message = "Invalid Role syntax")
-    private String role;
+    private String roleName;
 }

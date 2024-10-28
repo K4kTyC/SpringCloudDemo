@@ -1,14 +1,18 @@
 package com.example.authserver.controller;
 
 import com.example.authserver.dto.RoleDto;
+import com.example.authserver.dto.UpdateRolePrivilegeDto;
+import com.example.authserver.dto.UpdateUserRoleDto;
 import com.example.authserver.facade.RoleFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,12 +33,18 @@ public class RoleController {
         return ResponseEntity.ok(roleFacade.getAll());
     }
 
+    @PutMapping("/{roleId}")
+    @PreAuthorize("hasAuthority('roles.write')")
+    public ResponseEntity<UpdateUserRoleDto> updateRoleName(@PathVariable(name = "roleId") Long roleId,
+                                               @RequestBody @Validated UpdateUserRoleDto userRoleDto) {
+        return ResponseEntity.ok(roleFacade.updateRoleName(roleId, userRoleDto));
+    }
+
     @PostMapping("/{roleId}/privileges")
     @PreAuthorize("hasAuthority('roles.write')")
-    public ResponseEntity<Void> addPrivilege(@PathVariable(name = "roleId") Long roleId,
-                                             @RequestBody String privilegeName) {
-        roleFacade.addPrivilege(roleId, privilegeName.toLowerCase());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UpdateRolePrivilegeDto> addPrivilege(@PathVariable(name = "roleId") Long roleId,
+                                             @RequestBody UpdateRolePrivilegeDto rolePrivilegeDto) {
+        return ResponseEntity.ok(roleFacade.addPrivilege(roleId, rolePrivilegeDto));
     }
 
     @DeleteMapping("/{roleId}/privileges/{privilegeId}")

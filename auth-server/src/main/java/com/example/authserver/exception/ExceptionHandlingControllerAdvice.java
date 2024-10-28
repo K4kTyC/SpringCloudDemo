@@ -27,4 +27,9 @@ public class ExceptionHandlingControllerAdvice {
     public ResponseEntity<String> onActionForbiddenException(ActionForbiddenException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(DuplicateEntityException.class)
+    public ResponseEntity<String> onDuplicateEntityException(DuplicateEntityException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

@@ -34,7 +34,6 @@ public class UserController {
     @PreAuthorize("hasAuthority('roles.write')")
     public ResponseEntity<UpdateUserRoleDto> updateUserRole(@PathVariable(name = "id") Long userId,
                                                             @RequestBody @Validated UpdateUserRoleDto userRoleDto) {
-        String newRoleName = userFacade.updateUserRole(userId, userRoleDto.getRole());
-        return ResponseEntity.ok(new UpdateUserRoleDto(newRoleName));
+        return ResponseEntity.ok(userFacade.updateUserRole(userId, userRoleDto));
     }
 }

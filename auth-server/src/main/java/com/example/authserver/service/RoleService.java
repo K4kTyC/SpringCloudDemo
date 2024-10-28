@@ -15,4 +15,6 @@ public interface RoleService {
     Optional<Role> findById(Long roleId);
 
     Role save(Role role);
+
+    boolean existsByName(String newRoleName);
 }

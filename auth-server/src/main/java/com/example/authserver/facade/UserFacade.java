@@ -1,6 +1,7 @@
 package com.example.authserver.facade;
 
 import com.example.authserver.dto.NewUserDto;
+import com.example.authserver.dto.UpdateUserRoleDto;
 import com.example.authserver.dto.UserDto;
 import com.example.authserver.entity.Role;
 import com.example.authserver.entity.User;
@@ -47,14 +48,16 @@ public class UserFacade {
                 .toList();
     }
 
-    public String updateUserRole(Long userId, String newRoleName) {
+    public UpdateUserRoleDto updateUserRole(Long userId, UpdateUserRoleDto userRoleDto) {
+        String newRoleName = userRoleDto.getRoleName();
+
         User user = userService.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("No user with id: " + userId));
         if (user.getRole().getName().equals("ROLE_ADMIN")) {
             throw new ActionForbiddenException("Modifying Role of Admin users is forbidden");
         }
         if (user.getRole().getName().equals(newRoleName)) {
-            return newRoleName;
+            return new UpdateUserRoleDto(user.getRole().getId(), user.getRole().getName());
         }
 
         Role role = roleService.findByName(newRoleName)
@@ -63,6 +66,6 @@ public class UserFacade {
         user.setRole(role);
         userService.save(user);
 
-        return role.getName();
+        return new UpdateUserRoleDto(role.getId(), role.getName());
     }
 }
