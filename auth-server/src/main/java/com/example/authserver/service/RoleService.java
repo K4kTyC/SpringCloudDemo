@@ -17,4 +17,8 @@ public interface RoleService {
     Role save(Role role);
 
     boolean existsByName(String newRoleName);
+
+    void deleteById(Long roleId);
+
+    boolean existsById(Long roleId);
 }

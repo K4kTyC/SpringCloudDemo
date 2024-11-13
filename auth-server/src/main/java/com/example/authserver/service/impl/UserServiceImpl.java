@@ -5,6 +5,9 @@ import com.example.authserver.entity.User;
 import com.example.authserver.repository.UserRepository;
 import com.example.authserver.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -66,5 +69,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    public Slice<User> findByRoleId(Long roleId) {
+        Pageable firstFiveUsers = PageRequest.ofSize(5);
+        return userRepository.findByRoleId(roleId, firstFiveUsers);
+    }
 
+    public long countByRoleId(Long roleId) {
+        return userRepository.countByRoleId(roleId);
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.authserver.service;
 
 import com.example.authserver.entity.User;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -16,4 +17,8 @@ public interface UserService extends UserDetailsService {
     Optional<User> findById(Long userId);
 
     void save(User user);
+
+    Slice<User> findByRoleId(Long roleId);
+
+    long countByRoleId(Long roleId);
 }

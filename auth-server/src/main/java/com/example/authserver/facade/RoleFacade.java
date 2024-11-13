@@ -3,16 +3,20 @@ package com.example.authserver.facade;
 import com.example.authserver.dto.RoleDto;
 import com.example.authserver.dto.UpdateRolePrivilegeDto;
 import com.example.authserver.dto.UpdateUserRoleDto;
+import com.example.authserver.dto.UsersOfRoleDto;
 import com.example.authserver.entity.Privilege;
 import com.example.authserver.entity.Role;
+import com.example.authserver.entity.User;
 import com.example.authserver.exception.ActionForbiddenException;
 import com.example.authserver.exception.DuplicateEntityException;
 import com.example.authserver.exception.EntityNotFoundException;
 import com.example.authserver.mapper.RoleMapper;
 import com.example.authserver.service.PrivilegeService;
 import com.example.authserver.service.RoleService;
+import com.example.authserver.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -24,6 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RoleFacade {
 
+    private final UserService userService;
     private final RoleService roleService;
     private final PrivilegeService privilegeService;
 
@@ -104,5 +109,38 @@ public class RoleFacade {
         privileges.remove(privilegeToDelete);
         role.setPrivileges(privileges);
         roleService.save(role);
+    }
+
+    public List<UsersOfRoleDto> findUsersOfEachRole() {
+        return roleService.getAll().stream()
+                .map(role -> getUsersOfRole(role.getId()))
+                .toList();
+    }
+
+    private UsersOfRoleDto getUsersOfRole(Long roleId) {
+        Slice<User> userSlice = userService.findByRoleId(roleId);
+        UsersOfRoleDto dto = new UsersOfRoleDto();
+        dto.setRoleId(roleId);
+        dto.setHasMore(userSlice.hasNext());
+        dto.setUsernames(userSlice.stream()
+                .map(User::getUsername)
+                .toList());
+
+        return dto;
+    }
+
+    public void deleteRole(Long roleId) {
+        Role role = roleService.findById(roleId)
+                .orElseThrow(() -> new EntityNotFoundException("No role with id: " + roleId));
+
+        if (userService.countByRoleId(roleId) > 0) {
+            throw new ActionForbiddenException("Unable to delete the Role that is currently used by a User");
+        }
+
+        if (role.getName().equals("ROLE_ADMIN")) {
+            throw new ActionForbiddenException("Modifying Admin Role is forbidden");
+        }
+
+        roleService.deleteById(roleId);
     }
 }

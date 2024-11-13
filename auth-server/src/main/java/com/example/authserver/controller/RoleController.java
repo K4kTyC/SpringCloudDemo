@@ -3,6 +3,7 @@ package com.example.authserver.controller;
 import com.example.authserver.dto.RoleDto;
 import com.example.authserver.dto.UpdateRolePrivilegeDto;
 import com.example.authserver.dto.UpdateUserRoleDto;
+import com.example.authserver.dto.UsersOfRoleDto;
 import com.example.authserver.facade.RoleFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,19 @@ public class RoleController {
     public ResponseEntity<Void> deletePrivilege(@PathVariable(name = "roleId") Long roleId,
                                           @PathVariable(name = "privilegeId") Long privilegeId) {
         roleFacade.deletePrivilege(roleId, privilegeId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users")
+    @PreAuthorize("hasAuthority('roles.write')")
+    public ResponseEntity<List<UsersOfRoleDto>> findUsersOfEachRole() {
+        return ResponseEntity.ok(roleFacade.findUsersOfEachRole());
+    }
+
+    @DeleteMapping("/{roleId}")
+    @PreAuthorize("hasAuthority('roles.write')")
+    public ResponseEntity<Void> deleteRole(@PathVariable(name = "roleId") Long roleId) {
+        roleFacade.deleteRole(roleId);
         return ResponseEntity.ok().build();
     }
 }
