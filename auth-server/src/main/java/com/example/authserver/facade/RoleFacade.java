@@ -1,5 +1,6 @@
 package com.example.authserver.facade;
 
+import com.example.authserver.dto.PrivilegeDto;
 import com.example.authserver.dto.RoleDto;
 import com.example.authserver.dto.UpdateRolePrivilegeDto;
 import com.example.authserver.dto.UpdateUserRoleDto;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,26 @@ public class RoleFacade {
         return roles.stream()
                 .map(roleMapper::toDto)
                 .toList();
+    }
+
+    public RoleDto createRole(RoleDto roleDto) {
+        if (roleService.existsByName(roleDto.getName())) {
+            throw new DuplicateEntityException("Role with such name already exists");
+        }
+
+        List<Privilege> persistedPrivileges = new ArrayList<>();
+        for (PrivilegeDto dto : roleDto.getPrivileges()) {
+            String privilegeName = dto.getName();
+            Privilege persistedPrivilege = privilegeService.findByName(privilegeName)
+                    .orElseGet(() -> privilegeService.save(new Privilege(privilegeName)));
+            persistedPrivileges.add(persistedPrivilege);
+        }
+
+        Role role = new Role(roleDto.getName());
+        role.setPrivileges(persistedPrivileges);
+        Role savedRole = roleService.save(role);
+
+        return roleMapper.toDto(savedRole);
     }
 
     public UpdateUserRoleDto updateRoleName(Long roleId, UpdateUserRoleDto userRoleDto) {

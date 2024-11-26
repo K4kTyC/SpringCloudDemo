@@ -34,6 +34,12 @@ public class RoleController {
         return ResponseEntity.ok(roleFacade.getAll());
     }
 
+    @PostMapping()
+    @PreAuthorize("hasAuthority('roles.write')")
+    public ResponseEntity<RoleDto> createRole(@RequestBody @Validated RoleDto roleDto) {
+        return ResponseEntity.ok(roleFacade.createRole(roleDto));
+    }
+
     @PutMapping("/{roleId}")
     @PreAuthorize("hasAuthority('roles.write')")
     public ResponseEntity<UpdateUserRoleDto> updateRoleName(@PathVariable(name = "roleId") Long roleId,
